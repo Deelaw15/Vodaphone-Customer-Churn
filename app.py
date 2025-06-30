@@ -1,32 +1,41 @@
 import streamlit as st
+import pickle
 
-# Set page config
-st.set_page_config(page_title="SmartRetain", page_icon="🤖", layout="centered")
+# Load your churn model and vectorizer
+model = pickle.load(open("churn_model.pkl", "rb"))
+vectorizer = pickle.load(open("vodafone_vectorizer.pkl", "rb"))
 
-st.title("📱 SmartRetain - Customer Churn Assistant")
+# Set page layout
+st.set_page_config(page_title="SmartRetain Assistant", layout="centered")
 
-# Chat history in session
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# Title
+st.title("📱 Vodafone Churn Risk Assistant")
 
-# Display messages
-for msg in st.session_state.messages:
+# Chat input from user
+user_input = st.chat_input("How can we help you today?")
+
+# Maintain chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+# Display conversation
+for msg in st.session_state.chat_history:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# User input
-user_input = st.chat_input("Type your message here...")
-
+# Predict and respond
 if user_input:
-    # Save user message
-    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.session_state.chat_history.append({"role": "user", "content": user_input})
 
-    # Simulated bot response (for now)
-    response = "Thanks for your message! We're checking your churn risk..."
+    # Vectorize and predict
+    X = vectorizer.transform([user_input])
+    prediction = model.predict(X)[0]
+    
+    # Generate response
+    if prediction == 1:
+        response = "⚠️ This customer is **likely to churn**. Recommend offering a retention promo."
+    else:
+        response = "✅ This customer seems satisfied. No immediate action needed."
 
-    # Save bot message
-    st.session_state.messages.append({"role": "assistant", "content": response})
-
-    # Display bot message
-    with st.chat_message("assistant"):
-        st.markdown(response)
+    st.session_state.chat_history.append({"role": "assistant", "content": response})
+    st.rerun()
