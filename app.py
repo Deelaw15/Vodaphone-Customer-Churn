@@ -4,7 +4,7 @@ import joblib
 
 # Load your churn model and vectorizer
 model = joblib.load(open("churn_model.pkl", "rb"))
-vectorizer = pickle.load(open("vodafone_vectorizer.pkl", "rb"))
+vectorizer = joblib.load(open("vodafone_vectorizer.pkl", "rb"))
 
 # Set page layout
 st.set_page_config(page_title="SmartRetain Assistant", layout="centered")
