@@ -1,42 +1,38 @@
 import streamlit as st
+import numpy as np
 import pickle
 import joblib
 
-# Load your churn model and vectorizer
-model = joblib.load(open("vodaphone_churn_model.pkl", "rb"))
-vectorizer = joblib.load(open("vodafone_vectorizer.pkl", "rb"))
-
-# Set page layout
-st.set_page_config(page_title="SmartRetain Assistant", layout="centered")
+# Load models
+structured_model = pickle.load(open("churn_model.pkl", "rb"))  # trained on structured data
+text_model = pickle.load(open("vodafone_churn_model.pkl", "rb"))  # trained on review vectors
+vectorizer = pickle.load(open("vodafone_vectorizer.pkl", "rb"))
 
 # Title
-st.title("📱 Vodafone Churn Risk Assistant")
+st.title("📉 Vodafone Churn Risk Assistant")
 
-# Chat input from user
-user_input = st.chat_input("How can we help you today?")
+# Input selection
+input_type = st.radio("Select input type:", ["Structured Features", "Customer Review"])
 
-# Maintain chat history
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
+if input_type == "Structured Features":
+    st.subheader("Enter Customer Details")
+    age = st.number_input("Age", min_value=18, max_value=100)
+    tenure = st.slider("Tenure (months)", min_value=0, max_value=60)
+    monthly_charges = st.number_input("Monthly Charges")
+    # Add all other features needed (up to 13 total)
 
-# Display conversation
-for msg in st.session_state.chat_history:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
+    if st.button("Predict Churn"):
+        # Build feature array
+        input_features = np.array([age, tenure, monthly_charges, ...])  # complete with all 13
+        input_features = input_features.reshape(1, -1)
+        prediction = structured_model.predict(input_features)[0]
+        st.success("Prediction: " + ("Churn" if prediction == 1 else "Not Churn"))
 
-# Predict and respond
-if user_input:
-    st.session_state.chat_history.append({"role": "user", "content": user_input})
+elif input_type == "Customer Review":
+    st.subheader("Paste Customer Review")
+    review = st.text_area("Customer Feedback")
 
-    # Vectorize and predict
-    X = vectorizer.transform([user_input])
-    prediction = model.predict(X)[0]
-    
-    # Generate response
-    if prediction == 1:
-        response = "⚠️ This customer is **likely to churn**. Recommend offering a retention promo."
-    else:
-        response = "✅ This customer seems satisfied. No immediate action needed."
-
-    st.session_state.chat_history.append({"role": "assistant", "content": response})
-    st.rerun()
+    if st.button("Analyze Review for Churn Risk"):
+        review_vector = vectorizer.transform([review])
+        prediction = text_model.predict(review_vector)[0]
+        st.success("Prediction from review: " + ("Churn" if prediction == 1 else "Not Churn"))
