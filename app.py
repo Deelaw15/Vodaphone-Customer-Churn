@@ -1,12 +1,12 @@
 import streamlit as st
 import numpy as np
-import pickle
 import joblib
 
+
 # Load models
-structured_model = pickle.load(open("churn_model.pkl", "rb"))  # trained on structured data
-text_model = pickle.load(open("vodafone_churn_model.pkl", "rb"))  # trained on review vectors
-vectorizer = pickle.load(open("vodafone_vectorizer.pkl", "rb"))
+structured_model = joblib.load(open("churn_model.pkl", "rb"))  # trained on structured data
+text_model = joblib.load(open("vodafone_churn_model.pkl", "rb"))  # trained on review vectors
+vectorizer = joblib.load(open("vodafone_vectorizer.pkl", "rb"))
 
 # Title
 st.title("📉 Vodafone Churn Risk Assistant")
