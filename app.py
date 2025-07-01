@@ -3,7 +3,7 @@ import pickle
 import joblib
 
 # Load your churn model and vectorizer
-model = joblib.load(open("churn_model.pkl", "rb"))
+model = joblib.load(open("vodaphone_churn_model.pkl", "rb"))
 vectorizer = joblib.load(open("vodafone_vectorizer.pkl", "rb"))
 
 # Set page layout
