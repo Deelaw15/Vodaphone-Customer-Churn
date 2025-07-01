@@ -1,8 +1,9 @@
 import streamlit as st
 import pickle
+import joblib
 
 # Load your churn model and vectorizer
-model = pickle.load(open("churn_model.pkl", "rb"))
+model = joblib.load(open("churn_model.pkl", "rb"))
 vectorizer = pickle.load(open("vodafone_vectorizer.pkl", "rb"))
 
 # Set page layout
