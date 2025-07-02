@@ -1,38 +1,68 @@
 import streamlit as st
+import joblib   
+import pickle
 import numpy as np
-import joblib
+import time
 
-
-# Load models
-structured_model = joblib.load(open("churn_model.pkl", "rb"))  # trained on structured data
-text_model = joblib.load(open("vodafone_churn_model.pkl", "rb"))  # trained on review vectors
+# === Load Models and Tools ===
+model = joblib.load(open("vodafone_churn_model.pkl", "rb"))
 vectorizer = joblib.load(open("vodafone_vectorizer.pkl", "rb"))
+lda_model = pickle.load(open("lda_model.gensim", "rb"))
+dictionary = joblib.load(open("lda_dictionary.dict", "rb"))
 
-# Title
-st.title("📉 Vodafone Churn Risk Assistant")
+# === Topic Mapping & Retention Responses ===
+topic_actions = {
+    "Customer Service": "Recognize and reward outstanding support staff to improve satisfaction.",
+    "Pricing & Charges": "Consider offering a discount or explaining charges to reduce confusion.",
+    "Network & Coverage": "Investigate local network issues and offer service guarantees.",
+    "Technical Support": "Follow up with technical help or offer premium support.",
+    "Positive Feedback": "Send a thank-you message or loyalty reward to reinforce brand satisfaction.",
+    "Contract & Terms": "Provide flexible contract options to improve retention.",
+    "Default": "Thank the customer for their feedback and monitor for further signals."
+}
 
-# Input selection
-input_type = st.radio("Select input type:", ["Structured Features", "Customer Review"])
+# === Topic Label Mapping ===
+topic_labels = {
+    0: "Customer Service",
+    1: "Pricing & Charges",
+    2: "Network & Coverage",
+    3: "Technical Support",
+    4: "Positive Feedback",
+    5: "Contract & Terms"
+}
 
-if input_type == "Structured Features":
-    st.subheader("Enter Customer Details")
-    age = st.number_input("Age", min_value=18, max_value=100)
-    tenure = st.slider("Tenure (months)", min_value=0, max_value=60)
-    monthly_charges = st.number_input("Monthly Charges")
-    # Add all other features needed (up to 13 total)
+# === Streamlit Layout ===
+st.markdown("## 📈 SmartRetain - Churn Prediction & Response System")
+st.markdown("Welcome! Paste a customer review below, and SmartRetain will predict if the customer is likely to churn and suggest a personalized action.")
 
-    if st.button("Predict Churn"):
-        # Build feature array
-        input_features = np.array([age, tenure, monthly_charges, ...])  # complete with all 13
-        input_features = input_features.reshape(1, -1)
-        prediction = structured_model.predict(input_features)[0]
-        st.success("Prediction: " + ("Churn" if prediction == 1 else "Not Churn"))
+# === Input Area ===
+review = st.text_area("✍️ Enter Customer Review")
 
-elif input_type == "Customer Review":
-    st.subheader("Paste Customer Review")
-    review = st.text_area("Customer Feedback")
+if st.button("🔍 Analyze Review"):
+    with st.spinner("Analyzing review..."):
+        # Simulate wait time
+        time.sleep(1.5)
 
-    if st.button("Analyze Review for Churn Risk"):
+        # Vectorize input
         review_vector = vectorizer.transform([review])
-        prediction = text_model.predict(review_vector)[0]
-        st.success("Prediction from review: " + ("Churn" if prediction == 1 else "Not Churn"))
+
+        # Predict churn
+        churn_pred = model.predict(review_vector)[0]
+        prediction = "Churn" if churn_pred == 1 else "No Churn"
+
+        # Identify topic using LDA
+        bow = dictionary.doc2bow(review.lower().split())
+        topics = lda_model.get_document_topics(bow)
+        if topics:
+            top_topic_id = max(topics, key=lambda x: x[1])[0]
+            topic = topic_labels.get(top_topic_id, "Other")
+        else:
+            topic = "Unknown"
+
+        # Suggest Action
+        action = topic_actions.get(topic, topic_actions["Default"])
+
+    # === Display Output ===
+    st.success(f"**Prediction:** {prediction}")
+    st.info(f"**Topic Identified:** {topic}")
+    st.warning(f"**⚠️ Suggested Action:** {action}")
