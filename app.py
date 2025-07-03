@@ -8,7 +8,7 @@ from gensim.corpora import Dictionary
 # === Load Models and Tools ===
 model = joblib.load(open("vodafone_churn_model.pkl", "rb"))
 vectorizer = joblib.load(open("vodafone_vectorizer.pkl", "rb"))
-lda_model = LdaModel.load("lda_model.gensim")
+lda_model = LdaModel.load("lda_model")
 dictionary = Dictionary.load("lda_dictionary.dict")
 
 #lda_model = pickle.load(open("lda_model.gensim", "rb"))
