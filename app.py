@@ -11,9 +11,6 @@ vectorizer = joblib.load(open("vodafone_vectorizer.pkl", "rb"))
 lda_model = LdaModel.load("lda_model")
 dictionary = Dictionary.load("lda_dictionary.dict")
 
-#lda_model = pickle.load(open("lda_model.gensim", "rb"))
-#dictionary = joblib.load(open("lda_dictionary.dict", "rb"))
-
 # === Topic Mapping & Retention Responses ===
 topic_actions = {
     "Customer Service": "Recognize and reward outstanding support staff to improve satisfaction.",
