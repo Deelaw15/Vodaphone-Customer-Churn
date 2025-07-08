@@ -6,8 +6,8 @@ from gensim.models import LdaModel
 from gensim.corpora import Dictionary
 
 # === Load Models and Tools ===
-model = joblib.load(open("vodafone_churn_model.pkl", "rb"))
-vectorizer = joblib.load(open("vodafone_vectorizer.pkl", "rb"))
+model = joblib.load(open("vodafone_churn_model.joblib", "rb"))
+vectorizer = joblib.load(open("vodafone_vectorizer.joblib", "rb"))
 lda_model = LdaModel.load("lda_model")
 dictionary = Dictionary.load("lda_dictionary.dict")
 
