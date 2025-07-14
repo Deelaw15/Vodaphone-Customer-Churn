@@ -1,0 +1,14 @@
+artifact_uri: file:///mnt/c/Users/deela/Vodaphone-Customer-Churn/mlruns/0/8ee7b3b7ad364e3c9b6c7d5cd169a172/artifacts
+end_time: 1752527808529
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 8ee7b3b7ad364e3c9b6c7d5cd169a172
+run_name: silent-hawk-360
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1752527808106
+status: 4
+tags: []
+user_id: deelaw

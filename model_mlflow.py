@@ -6,6 +6,8 @@ import joblib
 # Load the pre-trained model
 model = joblib.load("vodafone_churn_model.joblib")
 
+max_iter = 1000
+
 # Start MLflow tracking
 with mlflow.start_run():
     mlflow.log_param("model_type", "LogisticRegression")
